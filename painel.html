@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Confirmados da Fernanda</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: faixa do bosque no topo, resumo em números, ferramentas e lista de convidados (tabela no computador, cartões no celular) */
+:root{
+  --bg:#f4efe2;
+  --paper:#fffdf8;
+  --ink:#2a2620;
+  --muted:#6b6457;
+  --line:#e3dccb;
+  --sage:#a3b18a;
+  --sage-d:#7f8f66;
+  --rose:#9a4a55;
+  --rose-soft:#f3e1e1;
+  --font:"Jost","Futura","Century Gothic","Trebuchet MS",sans-serif;
+  --script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:relative;background:url("bosque.jpg") center 62%/cover;min-height:190px;display:flex;align-items:flex-end}
+header::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(244,239,226,0) 0%,rgba(244,239,226,.55) 35%,rgba(244,239,226,.95) 72%,var(--bg))}
+header .wrap{position:relative;z-index:1;width:100%;padding-block:18px 6px}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:500;margin:0}
+h1{font-family:var(--script);font-weight:400;font-size:clamp(38px,7vw,54px);line-height:1.05;margin:2px 0 0;color:var(--ink)}
+main.wrap{padding-block:12px 48px;display:grid;gap:18px}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--paper);border:1px solid var(--line);padding:14px 16px}
+.stat b{display:block;font-weight:300;font-size:clamp(30px,6vw,40px);line-height:1;color:var(--sage-d);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.stat.main b{color:var(--rose)}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tools .grow{flex:1 1 220px;min-width:0}
+input,select{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid #bdb5a3;padding:8px 12px;border-radius:0;width:100%}
+select{width:auto}
+.btn{font:inherit;font-size:14px;border:1px solid var(--sage);background:var(--sage);color:#fff;padding:8px 16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--sage-d);border-color:var(--sage-d)}
+.btn.ghost{background:transparent;color:var(--sage-d)}
+.btn.ghost:hover{background:var(--sage);color:#fff}
+input:focus-visible,select:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid var(--sage-d);outline-offset:2px}
+.status{font-size:13px;color:var(--muted);margin:0}
+
+.list{background:var(--paper);border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.who{font-weight:500}
+.chip{display:inline-block;font-size:12px;background:var(--rose-soft);color:var(--rose);padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:1px}
+.del{font:inherit;font-size:13px;background:none;border:0;color:var(--rose);cursor:pointer;padding:0;text-decoration:underline}
+.ask{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.ask .yes{background:var(--rose);border-color:var(--rose);color:#fff}
+.empty{padding:36px 20px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+.demo{background:var(--rose-soft);color:var(--rose);font-size:13px;padding:8px 12px;border:1px solid #e8c9c9}
+
+/* login */
+.login{max-width:380px;margin:30px auto 0;background:var(--paper);border:1px solid var(--line);padding:26px;display:grid;gap:12px}
+.login h2{margin:0;font-weight:500;font-size:20px}
+.login p{margin:0;color:var(--muted);font-size:14px}
+.err{color:var(--rose);font-size:14px;margin:0}
+
+@media (max-width:640px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat.main{grid-column:1/-1}
+  table,thead,tbody,tr,td{display:block}
+  thead{display:none}
+  tr{padding:12px 14px;border-bottom:1px solid var(--line)}
+  tr:last-child{border-bottom:0}
+  td{border:0;padding:2px 0}
+  td[data-l]::before{content:attr(data-l) ": ";color:var(--muted);font-size:13px}
+  td.act{padding-top:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Painel da festa · 18/12/2026 às 18h</p>
+    <h1>Confirmados da Fernanda</h1>
+  </div>
+</header>
+
+<main class="wrap">
+  <form class="login" id="login" novalidate>
+    <h2>Entrar no painel</h2>
+    <p>Digite a senha da festa para ver quem confirmou presença.</p>
+    <label for="senha" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Senha</label>
+    <input id="senha" type="password" placeholder="Senha" autocomplete="current-password">
+    <p class="err" id="loginErr" hidden></p>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+
+  <section id="app" hidden>
+    <div style="display:grid;gap:18px">
+      <p class="demo" id="demo" hidden>Exemplo: o painel ainda não está ligado à planilha, então estes nomes são só para mostrar como fica.</p>
+      <div class="stats">
+        <div class="stat main"><b id="sTotal">0</b><span>pessoas confirmadas (com acompanhantes)</span></div>
+        <div class="stat"><b id="sResp">0</b><span>confirmações</span></div>
+        <div class="stat"><b id="sAcomp">0</b><span>acompanhantes</span></div>
+      </div>
+
+      <div class="tools">
+        <div class="grow"><label for="busca" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar</label><input id="busca" type="search" placeholder="Buscar por nome ou telefone"></div>
+        <label for="ordem" class="status">Ordenar por</label>
+        <select id="ordem">
+          <option value="data-desc">Mais recentes</option>
+          <option value="data-asc">Mais antigas</option>
+          <option value="nome">Nome (A–Z)</option>
+        </select>
+        <button class="btn ghost" id="atualizar" type="button">Atualizar</button>
+        <a class="btn" id="baixar" href="#" download="confirmados-fernanda.txt">Baixar lista (.txt)</a>
+      </div>
+      <p class="status" id="status"></p>
+
+      <div class="list">
+        <table>
+          <thead><tr><th>Nome</th><th>Telefone</th><th>Acompanhantes</th><th>Data</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="empty" id="vazio" hidden><strong>Ninguém confirmou ainda</strong>As confirmações aparecem aqui assim que os convidados enviarem pelo convite.</div>
+      </div>
+      <button class="btn ghost" id="sair" type="button" style="justify-self:start">Sair do painel</button>
+    </div>
+  </section>
+</main>
+
+<script>
+// Cole aqui o link do App da Web do Google Apps Script (o mesmo do convite)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYhj8jKS74gpI5zTEpAWLwmqa-ApoaKRVDVWAyWRy4BOsKH20gh9KjlkQ3l1j0mChh0A/exec";
+
+const $ = id => document.getElementById(id);
+let senha = "", lista = [], pendente = null;
+const store = {
+  get(){ try { return sessionStorage.getItem("painel-senha") || ""; } catch(_) { return ""; } },
+  set(v){ try { v ? sessionStorage.setItem("painel-senha", v) : sessionStorage.removeItem("painel-senha"); } catch(_) {} }
+};
+
+function contaAcomp(t){
+  if (!t) return 0;
+  const n = t.split(/,|;|\/|\n|\s+e\s+/i).map(s => s.trim()).filter(s => s && !/^(nenhum|nao|não|0|-)$/i.test(s)).length;
+  return Math.min(n, 2);
+}
+const fmtData = iso => {
+  const d = new Date(iso); if (isNaN(d)) return iso || "";
+  const p = n => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+const fmtTel = t => {
+  const d = String(t || "").replace(/\D/g, "").replace(/^55(?=\d{10,11}$)/, "");
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return t || "";
+};
+
+async function api(params){
+  const u = new URL(SCRIPT_URL);
+  Object.entries({ key: senha, ...params }).forEach(([k, v]) => u.searchParams.set(k, v));
+  const r = await fetch(u.toString(), { method: "GET", redirect: "follow" });
+  return r.json();
+}
+
+async function carregar(){
+  if (!SCRIPT_URL){ lista = exemplo(); $("demo").hidden = false; render(); return; }
+  $("status").textContent = "Carregando…";
+  try {
+    const r = await api({ action: "list" });
+    if (!r.ok){ if (r.erro === "senha"){ sair("Senha incorreta."); return; } throw new Error(r.erro); }
+    lista = r.lista; render();
+    $("status").textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  } catch(e){
+    $("status").textContent = "Não consegui carregar a lista. Verifique a internet e toque em Atualizar.";
+  }
+}
+
+function render(){
+  const q = $("busca").value.trim().toLowerCase();
+  const ord = $("ordem").value;
+  let v = lista.filter(r => !q || r.nome.toLowerCase().includes(q) || String(r.telefone).includes(q.replace(/\D/g, "") || "§"));
+  v.sort((a, b) => ord === "nome" ? a.nome.localeCompare(b.nome, "pt-BR")
+                 : ord === "data-asc" ? new Date(a.data) - new Date(b.data) : new Date(b.data) - new Date(a.data));
+  const acomp = lista.reduce((s, r) => s + contaAcomp(r.acompanhantes), 0);
+  $("sResp").textContent = lista.length;
+  $("sAcomp").textContent = acomp;
+  $("sTotal").textContent = lista.length + acomp;
+  $("vazio").hidden = lista.length > 0;
+  const tb = $("rows"); tb.textContent = "";
+  for (const r of v){
+    const tr = document.createElement("tr");
+    const n = contaAcomp(r.acompanhantes);
+    const td = (txt, cls, label) => { const c = document.createElement("td"); if (cls) c.className = cls; if (label) c.dataset.l = label; c.textContent = txt; tr.appendChild(c); return c; };
+    const nome = td(r.nome, "who");
+    if (n){ const ch = document.createElement("span"); ch.className = "chip"; ch.textContent = "+" + n; nome.appendChild(ch); }
+    td(fmtTel(r.telefone), "n", "Telefone");
+    td(r.acompanhantes || "—", "", "Acompanhantes");
+    td(fmtData(r.data), "n", "Data");
+    const a = td("", "act");
+    if (pendente === r.id){
+      a.innerHTML = '<span class="ask">Excluir mesmo? <button class="btn yes" type="button">Excluir</button><button class="btn ghost" type="button">Cancelar</button></span>';
+      a.querySelector(".yes").onclick = () => excluir(r.id);
+      a.querySelector(".ghost").onclick = () => { pendente = null; render(); };
+    } else {
+      const b = document.createElement("button"); b.className = "del"; b.type = "button"; b.textContent = "Excluir";
+      b.onclick = () => { pendente = r.id; render(); }; a.appendChild(b);
+    }
+    tb.appendChild(tr);
+  }
+  // lista para baixar
+  const linhas = [`Confirmados — Aniversário da Fernanda (18/12/2026)`, `Total: ${lista.length + acomp} pessoas (${lista.length} confirmações + ${acomp} acompanhantes)`, ""];
+  [...lista].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).forEach((r, i) =>
+    linhas.push(`${i + 1}. ${r.nome} — ${fmtTel(r.telefone)}${r.acompanhantes ? " — acompanhantes: " + r.acompanhantes : ""}`));
+  const old = $("baixar").href; if (old.startsWith("blob:")) URL.revokeObjectURL(old);
+  $("baixar").href = URL.createObjectURL(new Blob([linhas.join("\r\n")], { type: "text/plain;charset=utf-8" }));
+}
+
+async function excluir(id){
+  pendente = null;
+  if (!SCRIPT_URL){ lista = lista.filter(r => r.id !== id); render(); return; }
+  $("status").textContent = "Excluindo…";
+  try { const r = await api({ action: "delete", id }); if (!r.ok) throw 0; lista = lista.filter(x => x.id !== id); render(); $("status").textContent = "Confirmação excluída."; }
+  catch(_){ $("status").textContent = "Não consegui excluir. Tente de novo."; render(); }
+}
+
+function entrar(s){ senha = s; store.set(s); $("login").hidden = true; $("app").hidden = false; carregar(); }
+function sair(msg){
+  senha = ""; store.set(""); lista = []; $("app").hidden = true; $("login").hidden = false;
+  $("loginErr").textContent = msg || ""; $("loginErr").hidden = !msg; $("senha").value = ""; $("senha").focus();
+}
+$("login").addEventListener("submit", e => {
+  e.preventDefault();
+  const s = $("senha").value.trim();
+  if (!s && SCRIPT_URL){ $("loginErr").textContent = "Digite a senha."; $("loginErr").hidden = false; return; }
+  entrar(s);
+});
+$("sair").onclick = () => sair();
+$("atualizar").onclick = carregar;
+$("busca").oninput = render;
+$("ordem").onchange = render;
+setInterval(() => { if (senha && SCRIPT_URL && !document.hidden) carregar(); }, 60000);
+if (store.get()) entrar(store.get());
+
+function exemplo(){
+  const h = Date.now();
+  return [
+    { id: "e1", data: new Date(h - 864e5 * 3).toISOString(), nome: "Exemplo: Rebeca Abreu", telefone: "11958566100", acompanhantes: "André Souza" },
+    { id: "e2", data: new Date(h - 864e5).toISOString(), nome: "Exemplo: Carla Menezes", telefone: "21987654321", acompanhantes: "" },
+    { id: "e3", data: new Date(h - 36e5 * 5).toISOString(), nome: "Exemplo: Paulo Lima", telefone: "21991234567", acompanhantes: "Ana Lima, Pedro Lima" }
+  ];
+}
+</script>
+</body>
+</html>

@@ -146,7 +146,7 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 
       <div class="done" id="done" hidden>
         <img id="cartaoImg" class="cartao" alt="Cartão de presença confirmada" width="1600" height="800">
-        <p id="doneMsg"><strong>Obrigado!</strong> Para a confirmação chegar até a família, toque no botão abaixo e envie pelo WhatsApp.</p>
+        <p id="doneMsg"><strong>Presença confirmada!</strong> Obrigado, a família da Fernanda já recebeu sua confirmação.</p>
         <div class="row">
           <a class="btn" id="wa" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
           <a class="btn ghost" id="salvar" href="#" download="presenca-confirmada.jpg">Salvar cartão</a>
@@ -337,7 +337,9 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 
 </script>
 <script>
-// Número que recebe as confirmações (só dígitos: 55 + DDD + número). Vazio = ainda não configurado.
+// Link do App da Web do Google Apps Script (salva as confirmações na planilha e no painel)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYhj8jKS74gpI5zTEpAWLwmqa-ApoaKRVDVWAyWRy4BOsKH20gh9KjlkQ3l1j0mChh0A/exec";
+// Opcional: número de WhatsApp que também recebe a confirmação (só dígitos: 55 + DDD + número)
 const WHATSAPP = "";
 const FESTA = new Date("2026-12-18T18:00:00-03:00").getTime();
 
@@ -454,6 +456,23 @@ f.addEventListener("submit", async e => {
   if (tel.replace(/\D/g, "").length < 10) falta.push("um telefone com DDD");
   if (falta.length){ erro.textContent = "Preencha " + falta.join(" e ") + "."; erro.hidden = false; return; }
   erro.hidden = true;
+  const btn = f.querySelector('button[type="submit"]');
+  if (SCRIPT_URL){
+    btn.disabled = true; btn.textContent = "Enviando…";
+    try {
+      await fetch(SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ nome, telefone: tel, acompanhantes: acomp }) });
+    } catch(_){
+      btn.disabled = false; btn.textContent = "Enviar confirmação";
+      erro.textContent = "Não consegui enviar. Verifique a internet e tente de novo."; erro.hidden = false; return;
+    }
+    btn.disabled = false; btn.textContent = "Enviar confirmação";
+  }
+  const doneMsg = document.getElementById("doneMsg");
+  doneMsg.innerHTML = SCRIPT_URL
+    ? "<strong>Presença confirmada!</strong> Obrigado, a família da Fernanda já recebeu sua confirmação."
+    : WHATSAPP ? "<strong>Quase lá!</strong> Toque em Enviar pelo WhatsApp para a confirmação chegar até a família."
+    : "<strong>Obrigado!</strong> Guarde seu cartão de presença.";
   const txt = "Confirmo presença no aniversário da Fernanda (18/12, 18h)!\nNome: " + nome +
               "\nAcompanhantes: " + (acomp || "nenhum") + "\nTelefone: " + tel;
   if (WHATSAPP){ wa.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(txt); wa.hidden = false; }
