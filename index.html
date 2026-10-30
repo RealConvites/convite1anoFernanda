@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Convite da Fernanda</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Pinyon+Script&family=Great+Vibes&family=Playfair+Display:wght@500&display=swap">
+<style>
+/* Layout: abertura em vídeo em tela cheia; depois, páginas de tela inteira (convite, presentes, confirmação) com rolagem por página */
+:root{
+  --paper:#ffffff;
+  --cream:#efe9d8;
+  --ink:#2a2620;
+  --muted:#5b554b;
+  --sage:#a3b18a;
+  --sage-d:#86966c;
+  --line:#3b3833;
+  --err:#a1463c;
+  --font:"Jost","Futura","Century Gothic","Trebuchet MS",sans-serif;
+  --script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;overflow:hidden}
+
+/* ---------- abertura ---------- */
+#intro{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:#cfc7ae;transition:opacity .9s ease,visibility .9s}
+#intro::before{content:"";position:absolute;inset:-40px;background:url("anim/bg.jpg") center/cover;filter:blur(18px);opacity:.9}
+#cv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;height:100%;width:auto;aspect-ratio:9/16;max-width:none;background:url("anim/bg.jpg") center/cover}
+@media (orientation:portrait){#cv{width:max(100%,calc(100svh * 9 / 16));height:auto}}
+#intro{overflow:hidden}
+#intro.out{opacity:0;visibility:hidden}
+.skip{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));font:inherit;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:rgba(40,36,28,.35);border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:7px 14px;cursor:pointer;backdrop-filter:blur(4px)}
+.tap:disabled{opacity:.85;cursor:default}
+.tap{animation:pulse 2.4s ease-in-out infinite;position:absolute;inset:0;margin:auto;width:max-content;height:max-content;font:inherit;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--sage);border:0;border-radius:999px;padding:14px 26px;cursor:pointer;box-shadow:0 8px 24px rgba(40,50,30,.3)}
+
+/* ---------- páginas ---------- */
+#pages{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth;transition:opacity 1s ease}
+.js #intro{display:grid}
+.js #pages{opacity:0}
+.js #pages.in{opacity:1}
+#pages.in{opacity:1}
+.pg{position:relative;height:100svh;min-height:100%;scroll-snap-align:start;display:grid;place-items:center;overflow:hidden}
+.pg .bg{position:absolute;inset:-40px;background-position:center;background-size:cover;filter:blur(16px) saturate(.95);opacity:.85}
+.frame{position:relative;width:min(100vw,calc(100svh * 2 / 3));aspect-ratio:2/3}
+.frame img{display:block;width:100%;height:100%;object-fit:contain}
+.hot{position:absolute;display:block;border-radius:50%}
+.hot:focus-visible{outline:2px solid var(--sage-d);outline-offset:2px}
+.hot.aqui{left:64%;top:22%;width:10%;height:4%;border-radius:6px}
+.hot.icone{left:33.5%;top:28.5%;width:30%;height:19%}
+.hint{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:auto;width:max-content;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.75);border-radius:999px;padding:6px 14px;display:flex;align-items:center;gap:6px;text-decoration:none;animation:bob 2.2s ease-in-out infinite}
+.hint svg{width:12px;height:12px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* ---------- confirmação (página própria) ---------- */
+.view{position:fixed;inset:0;z-index:15;display:grid;place-items:center;overflow:auto;opacity:0;transition:opacity .45s ease}
+.view.on{opacity:1}
+.view .bg{position:absolute;inset:0;background:url("bosque.jpg") center/cover no-repeat}
+.back{justify-self:start;background:none;border:0;font:inherit;font-size:14px;color:var(--sage-d);padding:0;cursor:pointer;margin-bottom:2px}
+.back:hover{color:var(--ink)}
+.card{position:relative;width:min(440px,calc(100% - 32px));max-height:calc(100svh - 32px);overflow:auto;background:var(--paper);padding:30px 26px 32px;display:grid;gap:14px;box-shadow:0 10px 40px rgba(40,50,30,.22)}
+.count{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;justify-items:center;align-items:start}
+.unit{display:flex;flex-direction:column;align-items:center}
+.num{font-weight:300;font-size:clamp(34px,10vw,48px);line-height:1;color:var(--sage);font-variant-numeric:tabular-nums}
+.sep{font-size:22px;color:var(--muted);line-height:1.5}
+.lbl{font-size:12px;color:var(--muted);margin-top:6px}
+.card h2{font-family:var(--script);font-weight:400;font-size:38px;line-height:1.1;margin:4px 0 0;text-wrap:balance}
+.info{margin:0}
+.maps{color:var(--sage-d);font-size:14px}
+form{display:grid;gap:11px}
+label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+input{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:9px 13px;border-radius:0}
+input::placeholder{color:#8b867d}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--sage-d);outline-offset:2px}
+.btn{justify-self:start;font:inherit;font-size:15px;background:var(--sage);color:#fff;border:0;padding:10px 20px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--sage-d)}
+.msg{font-size:14px;margin:0}
+.err{color:var(--err)}
+.done{display:grid;gap:12px}
+.cartao{display:block;width:100%;height:auto;box-shadow:0 4px 18px rgba(80,40,40,.18)}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.btn.ghost{background:transparent;color:var(--sage-d);border:1px solid var(--sage)}
+.btn.ghost:hover{background:var(--sage);color:#fff}
+.done p{margin:0}
+.link{background:none;border:0;font:inherit;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer;justify-self:start}
+@media (prefers-reduced-motion:reduce){.view{transition:none}#pages{scroll-behavior:auto}.hint,.tap{animation:none}#intro,#pages{transition:none}}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+
+<div id="intro" aria-label="Abertura do convite">
+  <canvas id="cv" width="720" height="1280" aria-hidden="true"></canvas>
+</div>
+
+<main id="pages">
+  <section class="pg" id="convite" aria-label="Convite">
+    <div class="bg" style="background-image:url('convite.jpg')"></div>
+    <div class="frame">
+      <img src="convite.jpg" width="1024" height="1536" alt="Meu 1º Aniversário. Thays Santiago e Wallace Santiago convidam você para comemorar o aniversário da Pupuca, Fernanda Santiago. Sexta-feira, 18 de dezembro de 2026, às 18 horas, no Salão de Festas Villa Luna, R. Dr. Pio Borges, 1872, Pita, São Gonçalo, RJ.">
+    </div>
+    <a class="hint" href="#presentes">Deslize <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a>
+  </section>
+
+  <section class="pg" id="presentes" aria-label="Confirmação e sugestão de presentes">
+    <div class="bg" style="background-image:url('presenca.jpg')"></div>
+    <div class="frame">
+      <img src="presenca.jpg" width="1024" height="1536" alt="Confirme sua presença. Sugestão de presentinhos: roupinhas tamanho 24 ou mais, sapatinhos tamanho 21, mordedores ou brinquedos educativos, lacinhos e livrinhos.">
+      <a class="hot aqui" href="#confirmar" aria-label="Confirmar presença"></a>
+      <a class="hot icone" href="#confirmar" aria-label="Confirmar presença"></a>
+    </div>
+  </section>
+
+</main>
+
+  <section class="view" id="confirmar" aria-label="Confirmar presença" hidden>
+    <div class="bg"></div>
+    <div class="card">
+      <button type="button" class="back" id="back">&larr; Voltar ao convite</button>
+      <div class="count" role="timer" aria-label="Contagem regressiva para a festa">
+        <div class="unit"><span class="num" id="d">--</span><span class="lbl">Dias</span></div><span class="sep">:</span>
+        <div class="unit"><span class="num" id="h">--</span><span class="lbl">Horas</span></div><span class="sep">:</span>
+        <div class="unit"><span class="num" id="m">--</span><span class="lbl">Minutos</span></div><span class="sep">:</span>
+        <div class="unit"><span class="num" id="s">--</span><span class="lbl">Segundos</span></div>
+      </div>
+      <h2>Aniversário da Fernanda</h2>
+      <p class="info">Data: 18/12/2026 às 18h</p>
+      <p class="info">Endereço: R. Dr. Pio Borges, 1872 - Pita, São Gonçalo - RJ, 24412-000 (Salão de Festas Villa Luna) · <a class="maps" href="https://www.google.com/maps/search/?api=1&query=R.+Dr.+Pio+Borges,+1872+-+Pita,+S%C3%A3o+Gon%C3%A7alo+-+RJ,+24412-000" target="_blank" rel="noopener">Ver no mapa</a></p>
+
+      <form id="f" novalidate>
+        <label for="nome">Nome</label>
+        <input id="nome" name="nome" placeholder="Nome" autocomplete="name">
+        <label for="acomp">Acompanhantes</label>
+        <input id="acomp" name="acomp" placeholder="Acompanhantes - Máx. 2 (opcional)">
+        <label for="tel">Telefone</label>
+        <input id="tel" name="tel" placeholder="Telefone" inputmode="tel" autocomplete="tel">
+        <p class="msg err" id="erro" hidden></p>
+        <button class="btn" type="submit">Enviar confirmação</button>
+      </form>
+
+      <div class="done" id="done" hidden>
+        <img id="cartaoImg" class="cartao" alt="Cartão de presença confirmada" width="1600" height="800">
+        <p id="doneMsg"><strong>Obrigado!</strong> Para a confirmação chegar até a família, toque no botão abaixo e envie pelo WhatsApp.</p>
+        <div class="row">
+          <a class="btn" id="wa" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+          <a class="btn ghost" id="salvar" href="#" download="presenca-confirmada.jpg">Salvar cartão</a>
+        </div>
+        <button type="button" class="link" id="voltar">Corrigir meus dados</button>
+      </div>
+    </div>
+  </section>
+
+<script>
+// Abertura desenhada ao vivo num <canvas> (sem <video>): funciona em qualquer navegador.
+// Chama window.__abertura(canvas, assets, onFade, onDone)
+(function(){
+  const W = 720, H = 1280, EW = 618, EH = 418, U = 2;
+  const ENV_START = 0.9, ENV_END = 3.4, REST_Y = 490;
+  const OPEN0 = 4.0, OPEN1 = 5.0, PUSH0 = 5.9, PUSH1 = 7.3, FADE0 = 6.75, END = 7.6;
+
+  const clamp = t => Math.min(1, Math.max(0, t));
+  const easeIO = t => { t = clamp(t); return t * t * (3 - 2 * t); };
+  const easeOut = t => { t = clamp(t); return 1 - Math.pow(1 - t, 3); };
+  const easeIn = t => { t = clamp(t); return t * t * t; };
+  const easeOutBack = (t, s) => { t = clamp(t) - 1; return 1 + (s + 1) * t * t * t + s * t * t; };
+
+  function load(src){
+    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  }
+  function canvas(w, h){ const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+
+  // camadas de profundidade a partir do mapa de profundidade
+  function depthLayer(bg, depth, lo, hi){
+    const c = canvas(W, H), x = c.getContext("2d");
+    x.drawImage(bg, 0, 0, W, H);
+    const m = canvas(W, H), mx = m.getContext("2d");
+    mx.drawImage(depth, 0, 0, W, H);
+    const img = x.getImageData(0, 0, W, H), dm = mx.getImageData(0, 0, W, H).data, p = img.data;
+    for (let i = 0; i < p.length; i += 4){
+      let t = (dm[i] / 255 - lo) / (hi - lo); t = t < 0 ? 0 : t > 1 ? 1 : t;
+      p[i + 3] = 255 * t * t * (3 - 2 * t);
+    }
+    x.putImageData(img, 0, 0);
+    return c;
+  }
+
+  // pétalas
+  let seed = 7; const rnd = (a, b) => { seed = (seed * 16807) % 2147483647; return a + (b - a) * (seed / 2147483647); };
+  function petalSprite(size, soft){
+    const s = Math.ceil(size * 3), c = canvas(s, s), x = c.getContext("2d");
+    x.translate(s / 2, s / 2); x.scale(1, 0.58);
+    const r = size * 0.55 + soft;
+    const g = x.createRadialGradient(0, 0, 0, 0, 0, r);
+    const col = "240,176,196";
+    if (soft > 0){ g.addColorStop(0, `rgba(${col},.75)`); g.addColorStop(.55, `rgba(${col},.45)`); g.addColorStop(1, `rgba(${col},0)`); }
+    else { g.addColorStop(0, `rgba(${col},.9)`); g.addColorStop(.85, `rgba(${col},.85)`); g.addColorStop(1, `rgba(${col},0)`); }
+    x.fillStyle = g; x.beginPath(); x.arc(0, 0, r, 0, Math.PI * 2); x.fill();
+    return c;
+  }
+  const petals = [];
+  for (let i = 0; i < 16; i++) petals.push({x: rnd(0, W), y: rnd(-200, H), size: rnd(7, 11), soft: 0, vy: rnd(40, 70), sway: rnd(10, 25), ph: rnd(0, 6.28), rot: rnd(0, 360), vr: rnd(-60, 60), near: false});
+  for (let i = 0; i < 5; i++) petals.push({x: rnd(0, W), y: rnd(-300, H), size: rnd(26, 38), soft: rnd(5, 8), vy: rnd(120, 170), sway: rnd(30, 60), ph: rnd(0, 6.28), rot: rnd(0, 360), vr: rnd(-40, 40), near: true});
+  petals.forEach(p => p.spr = petalSprite(p.size, p.soft));
+  function drawPetals(x, t, near){
+    for (const p of petals){
+      if (p.near !== near) continue;
+      const y = ((p.y + p.vy * t) % (H + 300) + (H + 300)) % (H + 300) - 150;
+      const px = p.x + Math.sin(t * 1.3 + p.ph) * p.sway;
+      x.save(); x.translate(px, y); x.rotate((p.rot + p.vr * t) * Math.PI / 180);
+      x.drawImage(p.spr, -p.spr.width / 2, -p.spr.height / 2); x.restore();
+    }
+  }
+
+  const sparks = []; seed = 3;
+  for (let i = 0; i < 8; i++) sparks.push({dx: rnd(-70, 70), t0: rnd(0, 1.4), sz: rnd(6, 10), dr: rnd(-20, 20)});
+
+  // polígono da aba (coordenadas do envelope 2x)
+  const FLAP = [[0,0],[309,0],[309,22],[200,117],[155,150],[112,120],[0,25]].map(([a,b]) => [a * U, b * U]);
+
+  window.__abertura = async function(cv, A, onFade, onDone){
+    const [bg, depth, envC, envO, flapF, flapB] = await Promise.all([A.bg, A.depth, A.envClosed, A.envOpen, A.flapFront, A.flapBack].map(load));
+    const mid = depthLayer(bg, depth, 0.38, 0.52), near = depthLayer(bg, depth, 0.62, 0.76);
+    const layers = [[bg, 0.25], [mid, 0.5], [near, 0.85]];
+    const x = cv.getContext("2d");
+    let start = null, faded = false, stopped = false;
+
+    function frame(now){
+      if (stopped) return;
+      if (start === null) start = now;
+      const t = (now - start) / 1000;
+      x.setTransform(1, 0, 0, 1, 0, 0);
+      x.globalAlpha = 1; x.globalCompositeOperation = "source-over";
+      x.fillStyle = "#cfc7ae"; x.fillRect(0, 0, W, H);
+
+      // envelope: posição
+      const te = (t - ENV_START) / (ENV_END - ENV_START);
+      const bob = 1 - easeIO((t - PUSH0) / 0.6);
+      let cy = (H + 260) + (REST_Y - (H + 260)) * easeOutBack(te, 0.9);
+      let ang = -7 * (1 - easeOut(te));
+      if (te >= 1){ ang += Math.sin((t - ENV_END) * 2.0) * 1.2 * bob; cy += Math.sin((t - ENV_END) * 2.2) * 7 * bob; }
+      const sc = (0.92 + 0.08 * easeOut(te)) * (360 / 309) / U;
+      const op = [W / 2, cy + (30 * U - EH / 2) * sc];
+
+      // empurrão da câmera para dentro do envelope
+      const zp = easeIn((t - PUSH0) / (PUSH1 - PUSH0));
+      if (zp > 0 && te > 0){
+        const Z = 1 + 1.7 * zp;
+        const sx = (W / 2 - op[0]) * zp, sy = (H * 0.5 - op[1]) * zp;
+        x.setTransform(Z, 0, 0, Z, op[0] * (1 - Z) + sx, op[1] * (1 - Z) + sy);
+      }
+  
+      // bosque com profundidade
+      const k = easeIO(Math.min(1, t / 7));
+      for (const [img, dl] of layers){
+        const ea = 1 + 0.9 * (dl - 0.5), eb = ea;
+        const se = Math.pow(0.86, k * eb);
+        const cyl = 640 + (600 - 640) * k * ea;
+        x.save();
+        x.translate(W / 2, H / 2); x.scale(1 / se, 1 / se); x.translate(-W / 2, -cyl);
+        x.drawImage(img, 0, 0, W, H);
+        x.restore();
+      }
+      drawPetals(x, t, false);
+
+      if (te > 0){
+        const theta = Math.PI * easeIO((t - OPEN0) / (OPEN1 - OPEN0));
+        const c = Math.cos(theta);
+        const inner = 0.45 * easeIO((t - 4.5) / 0.9) + 0.25 * easeIO((t - PUSH0) / (PUSH1 - PUSH0));
+        x.save();
+        x.translate(W / 2, cy); x.rotate(-ang * Math.PI / 180); x.scale(sc, sc);
+        const L = -EW / 2, T = -EH / 2;
+        if (c < 0){ // aba aberta, por trás
+          x.save(); x.translate(L, T); x.scale(1, c); x.globalAlpha = 1;
+          x.drawImage(flapB, 0, 0); x.restore();
+        }
+        x.save();
+        x.shadowColor = "rgba(40,50,60,.35)"; x.shadowBlur = 30; x.shadowOffsetY = 18;
+        x.drawImage(theta > 0.02 ? envO : envC, L, T);
+        x.restore();
+        if (inner > 0){
+          x.save(); x.translate(L, T);
+          x.beginPath(); FLAP.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.closePath(); x.clip();
+          x.globalCompositeOperation = "screen"; x.fillStyle = `rgba(230,191,140,${inner})`; x.fillRect(0, 0, EW, 320);
+          x.restore();
+        }
+        if (c >= 0 && theta > 0.02){ // aba fechando/abrindo pela frente
+          x.save(); x.translate(L, T); x.scale(1, Math.max(c, 0.001));
+          x.drawImage(flapF, 0, 0);
+          x.globalCompositeOperation = "source-atop"; x.fillStyle = `rgba(0,0,0,${0.35 * (1 - c)})`; x.fillRect(0, 0, EW, flapF.height);
+          x.restore();
+        }
+        x.restore();
+
+        // luz suave saindo do envelope
+        const glow = 0.55 * easeIO((t - 4.5) / 0.9) + 0.30 * easeIn((t - PUSH0) / (PUSH1 - PUSH0));
+        if (glow > 0.005){
+          const gx = op[0], gy = op[1] + 25 * sc * U, sg = 80 + 70 * easeIO((t - PUSH0) / (PUSH1 - PUSH0));
+          const g = x.createRadialGradient(gx, gy, 0, gx, gy, sg * 3);
+          g.addColorStop(0, `rgba(255,222,170,${glow})`); g.addColorStop(1 / 3, `rgba(255,222,170,${glow * 0.61})`);
+          g.addColorStop(2 / 3, `rgba(255,222,170,${glow * 0.135})`); g.addColorStop(1, "rgba(255,222,170,0)");
+          x.save(); x.globalCompositeOperation = "screen"; x.fillStyle = g; x.fillRect(gx - sg * 3, gy - sg * 3, sg * 6, sg * 6); x.restore();
+        }
+        // faíscas
+        x.save(); x.globalCompositeOperation = "screen"; x.strokeStyle = "rgb(255,222,170)"; x.fillStyle = "rgb(255,222,170)"; x.lineWidth = 1.2;
+        for (const s of sparks){
+          const u = (t - (4.5 + s.t0)) / 1.6; if (u <= 0 || u >= 1) continue;
+          const px = op[0] + (s.dx + s.dr * u) * 0.8, py = op[1] - u * 120, r = s.sz * 0.8;
+          x.globalAlpha = Math.sin(u * Math.PI) * 0.95;
+          x.beginPath(); x.moveTo(px - r, py); x.lineTo(px + r, py); x.moveTo(px, py - r); x.lineTo(px, py + r); x.stroke();
+          x.beginPath(); x.arc(px, py, Math.max(1, r * 0.25), 0, Math.PI * 2); x.fill();
+        }
+        x.restore();
+      }
+      drawPetals(x, t, true);
+
+      // vinheta
+      x.setTransform(1, 0, 0, 1, 0, 0);
+      const v = x.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.78);
+      v.addColorStop(0, "rgba(30,25,15,0)"); v.addColorStop(1, "rgba(30,25,15,.18)");
+      x.fillStyle = v; x.fillRect(0, 0, W, H);
+
+      if (!faded && t >= FADE0){ faded = true; onFade && onFade(); }
+      if (t >= END){ stopped = true; onDone && onDone(); return; }
+      requestAnimationFrame(frame);
+    }
+    // primeiro quadro já desenhado antes de começar
+    requestAnimationFrame(frame);
+    return { stop(){ stopped = true; } };
+  };
+})();
+
+</script>
+<script>
+// Número que recebe as confirmações (só dígitos: 55 + DDD + número). Vazio = ainda não configurado.
+const WHATSAPP = "";
+const FESTA = new Date("2026-12-18T18:00:00-03:00").getTime();
+
+// ---------- abertura -> convite ----------
+const intro = document.getElementById("intro"), pages = document.getElementById("pages");
+let opened = false, anim = null;
+function openInvite(){
+  if (opened) return; opened = true;
+  pages.scrollTop = 0;
+  pages.classList.add("in");
+  intro.classList.add("out");
+  setTimeout(() => { if (anim) anim.stop(); intro.hidden = true; }, 950);
+}
+try {
+  window.__abertura(document.getElementById("cv"), {
+    bg: "anim/bg.jpg", depth: "anim/depth.png", envClosed: "anim/env_closed.jpg",
+    envOpen: "anim/env_open.jpg", flapFront: "anim/flap_front.png", flapBack: "anim/flap_back.png"
+  }, openInvite, openInvite).then(h => { anim = h; }).catch(openInvite);
+} catch (e) { openInvite(); }
+// segurança: se algo travar, o convite abre de qualquer jeito
+setTimeout(openInvite, 20000);
+
+// ---------- página de confirmação ----------
+const view = document.getElementById("confirmar");
+function showRsvp(){ view.hidden = false; requestAnimationFrame(() => view.classList.add("on")); }
+function hideRsvp(){ view.classList.remove("on"); setTimeout(() => { if (!view.classList.contains("on")) view.hidden = true; }, 450); }
+document.querySelectorAll('a[href="#confirmar"]').forEach(a => a.addEventListener("click", e => {
+  e.preventDefault(); showRsvp();
+  try { if (location.hash !== "#confirmar") history.pushState(null, "", "#confirmar"); } catch(_){}
+}));
+document.getElementById("back").addEventListener("click", () => {
+  hideRsvp();
+  try { if (location.hash === "#confirmar") history.back(); } catch(_){}
+});
+window.addEventListener("popstate", () => { if (location.hash === "#confirmar") showRsvp(); else hideRsvp(); });
+
+// ---------- contagem ----------
+const pad = n => String(n).padStart(2, "0");
+function tick(){
+  let r = Math.max(0, FESTA - Date.now());
+  const d = Math.floor(r / 864e5); r -= d * 864e5;
+  const h = Math.floor(r / 36e5); r -= h * 36e5;
+  const m = Math.floor(r / 6e4); r -= m * 6e4;
+  const s = Math.floor(r / 1e3);
+  [["d",d],["h",h],["m",m],["s",s]].forEach(([id,val]) => document.getElementById(id).textContent = pad(val));
+}
+tick(); setInterval(tick, 1000);
+
+// ---------- cartão personalizado ----------
+const CARTAO_SRC = "cartao.jpg";
+let cartaoBase = null;
+function loadCartao(){
+  if (!cartaoBase) cartaoBase = new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = CARTAO_SRC; });
+  return cartaoBase;
+}
+async function fontsReady(){
+  if (!document.fonts || !document.fonts.load) return;
+  try {
+    await Promise.race([
+      Promise.all(['200px "Great Vibes"', '500 110px "Playfair Display"', '400 30px "Jost"'].map(f => document.fonts.load(f))),
+      new Promise(r => setTimeout(r, 2500))
+    ]);
+  } catch(_){}
+}
+function fitFont(x, text, font, size, maxW){
+  let s = size; x.font = font.replace("{s}", s);
+  while (x.measureText(text).width > maxW && s > 20){ s -= 4; x.font = font.replace("{s}", s); }
+  return s;
+}
+function spaced(x, text, cx, y, track){
+  const ws = [...text].map(c => x.measureText(c).width);
+  let px = cx - (ws.reduce((a, b) => a + b, 0) + track * (ws.length - 1)) / 2;
+  x.textAlign = "left";
+  [...text].forEach((c, i) => { x.fillText(c, px, y); px += ws[i] + track; });
+  x.textAlign = "center";
+}
+async function makeCartao(nome){
+  const [img] = await Promise.all([loadCartao(), fontsReady()]);
+  const c = document.createElement("canvas"); c.width = 1600; c.height = 800;
+  const x = c.getContext("2d");
+  x.drawImage(img, 0, 0, 1600, 800);
+  x.textAlign = "center"; x.textBaseline = "alphabetic";
+  const rose = "#9a4a55";
+  const partes = nome.replace(/\s+/g, " ").trim().split(" ");
+  const primeiro = partes[0], resto = partes.slice(1).join(" ");
+  x.fillStyle = "#a0606a";
+  x.font = '500 28px "Jost", "Trebuchet MS", sans-serif';
+  spaced(x, "PRESENÇA CONFIRMADA", 800, 205, 7);
+  x.fillStyle = rose;
+  if (resto){
+    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', 210, 760);
+    x.fillText(primeiro, 800, 405);
+    fitFont(x, resto, '500 {s}px "Playfair Display", Georgia, serif', 112, 760);
+    x.fillText(resto, 800, 540);
+  } else {
+    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', 240, 760);
+    x.fillText(primeiro, 800, 470);
+  }
+  x.fillStyle = "#8a6a55";
+  fitFont(x, "Te esperamos dia 18/12, às 18h!", '400 {s}px "Jost", "Trebuchet MS", sans-serif', 32, 470);
+  x.fillText("Te esperamos dia 18/12, às 18h!", 800, 668);
+  return c;
+}
+
+// ---------- confirmação ----------
+const f = document.getElementById("f"), erro = document.getElementById("erro");
+const done = document.getElementById("done"), wa = document.getElementById("wa");
+const salvar = document.getElementById("salvar"), cartaoImg = document.getElementById("cartaoImg");
+f.addEventListener("submit", async e => {
+  e.preventDefault();
+  const nome = f.nome.value.trim(), acomp = f.acomp.value.trim(), tel = f.tel.value.trim();
+  const falta = [];
+  if (!nome) falta.push("seu nome");
+  if (tel.replace(/\D/g, "").length < 10) falta.push("um telefone com DDD");
+  if (falta.length){ erro.textContent = "Preencha " + falta.join(" e ") + "."; erro.hidden = false; return; }
+  erro.hidden = true;
+  const txt = "Confirmo presença no aniversário da Fernanda (18/12, 18h)!\nNome: " + nome +
+              "\nAcompanhantes: " + (acomp || "nenhum") + "\nTelefone: " + tel;
+  if (WHATSAPP){ wa.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(txt); wa.hidden = false; }
+  else { wa.hidden = true; }
+  try {
+    const c = await makeCartao(nome);
+    const url = c.toDataURL("image/jpeg", 0.9);
+    cartaoImg.src = url; salvar.href = url; cartaoImg.hidden = false; salvar.hidden = false;
+  } catch(_){ cartaoImg.hidden = true; salvar.hidden = true; }
+  f.hidden = true; done.hidden = false;
+});
+document.getElementById("voltar").addEventListener("click", () => { done.hidden = true; f.hidden = false; });
+</script>
+
+</body>
+</html>
