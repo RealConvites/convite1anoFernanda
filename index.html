@@ -136,8 +136,10 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
       <form id="f" novalidate>
         <label for="nome">Nome</label>
         <input id="nome" name="nome" placeholder="Nome" autocomplete="name">
-        <label for="acomp">Acompanhantes</label>
-        <input id="acomp" name="acomp" placeholder="Acompanhantes - Máx. 2 (opcional)">
+        <label for="acomp1">Nome do 1º acompanhante</label>
+        <input id="acomp1" name="acomp1" placeholder="Nome do 1º acompanhante (opcional)" autocomplete="off">
+        <label for="acomp2">Nome do 2º acompanhante</label>
+        <input id="acomp2" name="acomp2" placeholder="Nome do 2º acompanhante (opcional)" autocomplete="off">
         <label for="tel">Telefone</label>
         <input id="tel" name="tel" placeholder="Telefone" inputmode="tel" autocomplete="tel">
         <p class="msg err" id="erro" hidden></p>
@@ -416,7 +418,7 @@ function spaced(x, text, cx, y, track){
   [...text].forEach((c, i) => { x.fillText(c, px, y); px += ws[i] + track; });
   x.textAlign = "center";
 }
-async function makeCartao(nome){
+async function makeCartao(nome, acomps){
   const [img] = await Promise.all([loadCartao(), fontsReady()]);
   const c = document.createElement("canvas"); c.width = 1600; c.height = 800;
   const x = c.getContext("2d");
@@ -429,14 +431,22 @@ async function makeCartao(nome){
   x.font = '500 28px "Jost", "Trebuchet MS", sans-serif';
   spaced(x, "PRESENÇA CONFIRMADA", 800, 205, 7);
   x.fillStyle = rose;
+  const tem = acomps && acomps.length;
+  const up = tem ? 22 : 0;
   if (resto){
-    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', 210, 760);
-    x.fillText(primeiro, 800, 405);
-    fitFont(x, resto, '500 {s}px "Playfair Display", Georgia, serif', 112, 760);
-    x.fillText(resto, 800, 540);
+    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', tem ? 190 : 210, 760);
+    x.fillText(primeiro, 800, 400 - up);
+    fitFont(x, resto, '500 {s}px "Playfair Display", Georgia, serif', tem ? 96 : 112, 760);
+    x.fillText(resto, 800, 530 - up);
   } else {
-    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', 240, 760);
-    x.fillText(primeiro, 800, 470);
+    fitFont(x, primeiro, '{s}px "Great Vibes", "Pinyon Script", cursive', tem ? 210 : 240, 760);
+    x.fillText(primeiro, 800, 470 - up);
+  }
+  if (tem){
+    const linha = "com " + (acomps.length === 2 ? acomps[0] + " e " + acomps[1] : acomps[0]);
+    x.fillStyle = rose;
+    fitFont(x, linha, 'italic 500 {s}px "Playfair Display", Georgia, serif', 40, 740);
+    x.fillText(linha, 800, 572);
   }
   x.fillStyle = "#8a6a55";
   fitFont(x, "Te esperamos dia 18/12, às 18h!", '400 {s}px "Jost", "Trebuchet MS", sans-serif', 32, 470);
@@ -450,7 +460,9 @@ const done = document.getElementById("done"), wa = document.getElementById("wa")
 const salvar = document.getElementById("salvar"), cartaoImg = document.getElementById("cartaoImg");
 f.addEventListener("submit", async e => {
   e.preventDefault();
-  const nome = f.nome.value.trim(), acomp = f.acomp.value.trim(), tel = f.tel.value.trim();
+  const nome = f.nome.value.trim(), tel = f.tel.value.trim();
+  const acomps = [f.acomp1.value, f.acomp2.value].map(v => v.replace(/\s+/g, " ").trim()).filter(Boolean);
+  const acomp = acomps.join(", ");
   const falta = [];
   if (!nome) falta.push("seu nome");
   if (tel.replace(/\D/g, "").length < 10) falta.push("um telefone com DDD");
@@ -478,7 +490,7 @@ f.addEventListener("submit", async e => {
   if (WHATSAPP){ wa.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(txt); wa.hidden = false; }
   else { wa.hidden = true; }
   try {
-    const c = await makeCartao(nome);
+    const c = await makeCartao(nome, acomps);
     const url = c.toDataURL("image/jpeg", 0.9);
     cartaoImg.src = url; salvar.href = url; cartaoImg.hidden = false; salvar.hidden = false;
   } catch(_){ cartaoImg.hidden = true; salvar.hidden = true; }
