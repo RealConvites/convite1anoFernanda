@@ -84,6 +84,7 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 .done{display:grid;gap:12px}
 .cartao{display:block;width:100%;height:auto;box-shadow:0 4px 18px rgba(80,40,40,.18)}
 .row{display:flex;flex-wrap:wrap;gap:10px}
+.dica{font-size:13px;color:var(--muted);margin:0}
 .btn.ghost{background:transparent;color:var(--sage-d);border:1px solid var(--sage)}
 .btn.ghost:hover{background:var(--sage);color:#fff}
 .done p{margin:0}
@@ -151,8 +152,9 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
         <p id="doneMsg"><strong>Presença confirmada!</strong> Obrigado, a família da Fernanda já recebeu sua confirmação.</p>
         <div class="row">
           <a class="btn" id="wa" href="#" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
-          <a class="btn ghost" id="salvar" href="#" download="presenca-confirmada.jpg">Salvar cartão</a>
+          <a class="btn ghost" id="salvar" href="#" download="presenca-confirmada-fernanda.jpg">Salvar cartão</a>
         </div>
+        <p class="dica" id="dica">Se o cartão não baixar, toque e segure na imagem e escolha <strong>Salvar imagem</strong>.</p>
         <button type="button" class="link" id="voltar">Corrigir meus dados</button>
       </div>
     </div>
@@ -458,6 +460,20 @@ async function makeCartao(nome, acomps){
 const f = document.getElementById("f"), erro = document.getElementById("erro");
 const done = document.getElementById("done"), wa = document.getElementById("wa");
 const salvar = document.getElementById("salvar"), cartaoImg = document.getElementById("cartaoImg");
+let cartaoFile = null;
+// No celular, abre a tela de compartilhar (onde tem "Salvar imagem"); no computador, baixa o arquivo
+salvar.addEventListener("click", e => {
+  const touch = window.matchMedia && matchMedia("(pointer: coarse)").matches;
+  if (touch && cartaoFile && navigator.canShare && navigator.canShare({ files: [cartaoFile] })){
+    e.preventDefault();
+    navigator.share({ files: [cartaoFile], title: "Presença confirmada" }).catch(() => {});
+    return;
+  }
+  // iPhone/Android sem compartilhamento: abre a imagem numa aba para salvar
+  if (touch && !("download" in document.createElement("a"))){
+    e.preventDefault(); window.open(salvar.href, "_blank");
+  }
+});
 f.addEventListener("submit", async e => {
   e.preventDefault();
   const nome = f.nome.value.trim(), tel = f.tel.value.trim();
@@ -491,8 +507,16 @@ f.addEventListener("submit", async e => {
   else { wa.hidden = true; }
   try {
     const c = await makeCartao(nome, acomps);
-    const url = c.toDataURL("image/jpeg", 0.9);
-    cartaoImg.src = url; salvar.href = url; cartaoImg.hidden = false; salvar.hidden = false;
+    const dataUrl = c.toDataURL("image/jpeg", 0.9);
+    cartaoImg.src = dataUrl; cartaoImg.hidden = false; salvar.hidden = false;
+    salvar.href = dataUrl;
+    cartaoFile = null;
+    const blob = await new Promise(r => { try { c.toBlob(r, "image/jpeg", 0.9); } catch(_) { r(null); } });
+    if (blob){
+      if (salvar.href.startsWith("blob:")) URL.revokeObjectURL(salvar.href);
+      salvar.href = URL.createObjectURL(blob);
+      try { cartaoFile = new File([blob], "presenca-confirmada-fernanda.jpg", { type: "image/jpeg" }); } catch(_) {}
+    }
   } catch(_){ cartaoImg.hidden = true; salvar.hidden = true; }
   f.hidden = true; done.hidden = false;
 });
