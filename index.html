@@ -97,11 +97,22 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(-
 .done p{margin:0}
 .link{background:none;border:0;font:inherit;color:var(--muted);padding:0;text-decoration:underline;cursor:pointer;justify-self:start}
 @media (prefers-reduced-motion:reduce){.view{transition:none}#pages{scroll-behavior:auto}.hint,.tap{animation:none}#intro,#pages{transition:none}}
+
+/* ---------- botão de som ---------- */
+.som{position:fixed;z-index:35;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:6px;font:inherit;font-size:13px;letter-spacing:.04em;color:var(--ink);background:rgba(255,255,255,.88);border:1px solid rgba(134,150,108,.6);border-radius:999px;padding:8px 14px 8px 11px;cursor:pointer;box-shadow:0 4px 14px rgba(40,50,30,.18);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:somPulse 2.4s ease-in-out infinite}
+.som-i{font-size:16px;line-height:1}
+.som.on{animation:none;padding:8px 11px}
+.som.on .som-t{display:none}
+.som:focus-visible{outline:2px solid var(--sage-d);outline-offset:2px}
+@keyframes somPulse{0%,100%{box-shadow:0 4px 14px rgba(40,50,30,.18)}50%{box-shadow:0 0 0 6px rgba(163,177,138,.35)}}
+@media (prefers-reduced-motion:reduce){.som{animation:none}}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 
+
+<button class="som" id="som" type="button" aria-pressed="false" aria-label="Ativar som do bosque"><span class="som-i" aria-hidden="true">🔈</span><span class="som-t">Ativar som</span></button>
 
 <div id="intro" aria-label="Abertura do convite">
   <canvas id="cv" width="720" height="1280" aria-hidden="true"></canvas>
@@ -360,6 +371,81 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYhj8jKS74gpI5zTEpA
 // Opcional: número de WhatsApp que também recebe a confirmação (só dígitos: 55 + DDD + número)
 const WHATSAPP = "";
 const FESTA = new Date("2026-12-18T18:00:00-03:00").getTime();
+
+// ---------- som do bosque (repete sem emenda) ----------
+(function(){
+  const SOM_SRC = "som.mp3", LOOP_SAMPLES = 502740, LOOP_RATE = 44100, VOLUME = 0.6;
+  const btn = document.getElementById("som"), ic = btn.querySelector(".som-i"), tx = btn.querySelector(".som-t");
+  let ctx = null, gain = null, src = null, buf = null, loading = null, on = false, fallback = null, wantOn = false;
+
+  function ui(){ btn.classList.toggle("on", on); btn.setAttribute("aria-pressed", on); ic.textContent = on ? "🔊" : "🔈";
+    tx.textContent = "Ativar som"; btn.setAttribute("aria-label", on ? "Desligar som" : "Ativar som do bosque"); }
+
+  async function carregar(){
+    if (loading) return loading;
+    loading = (async () => {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) throw new Error("sem webaudio");
+      ctx = new AC();
+      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch(_){} // iPhone no silencioso
+      gain = ctx.createGain(); gain.gain.value = 0; gain.connect(ctx.destination);
+      const data = await (await fetch(SOM_SRC)).arrayBuffer();
+      buf = await new Promise((res, rej) => { const p = ctx.decodeAudioData(data, res, rej); if (p && p.then) p.then(res, rej); });
+    })();
+    return loading;
+  }
+  function inicioReal(b){ // pula o silêncio que alguns navegadores colocam no começo do mp3
+    const d = b.getChannelData(0), lim = Math.min(d.length, 8192);
+    for (let i = 0; i < lim; i++) if (Math.abs(d[i]) > 1e-4) return i / b.sampleRate;
+    return 0;
+  }
+  function tocarWeb(){
+    if (src) return;
+    src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const ini = inicioReal(buf), dur = LOOP_SAMPLES / LOOP_RATE;
+    src.loopStart = ini; src.loopEnd = Math.min(buf.duration, ini + dur);
+    src.connect(gain); src.start(0, ini);
+  }
+  function fade(to, s){ const t = ctx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(to, t + s); }
+
+  async function ligar(){
+    wantOn = true; on = true; ui();
+    try {
+      if (!ctx){ const pr = carregar(); if (ctx && ctx.state === "suspended") ctx.resume(); await pr; }
+      if (!wantOn) return;
+      if (ctx.state === "suspended") await ctx.resume();
+      tocarWeb(); fade(VOLUME, 1.2);
+    } catch(_){
+      // reserva: player comum do navegador
+      if (!fallback){ fallback = new Audio(SOM_SRC); fallback.loop = true; fallback.volume = VOLUME; }
+      try { await fallback.play(); } catch(e){ on = false; wantOn = false; ui(); }
+    }
+  }
+  function desligar(){
+    wantOn = false; on = false; ui();
+    if (ctx && gain){ fade(0, 0.5); setTimeout(() => { if (!wantOn && ctx.state === "running") ctx.suspend(); }, 600); }
+    if (fallback) fallback.pause();
+  }
+  btn.addEventListener("click", e => { e.stopPropagation(); primeiro = false; (on ? desligar : ligar)(); });
+
+  // o primeiro toque em qualquer lugar da página já liga o som
+  let primeiro = true;
+  const EVS = ["touchend", "click", "keydown"];
+  const primeiroToque = e => {
+    if (!primeiro || btn.contains(e.target)) return; primeiro = false;
+    EVS.forEach(ev => document.removeEventListener(ev, primeiroToque, true));
+    if (!on) ligar();
+  };
+  EVS.forEach(ev => document.addEventListener(ev, primeiroToque, true));
+
+  // pausa quando a pessoa sai da página e volta quando ela retorna
+  document.addEventListener("visibilitychange", () => {
+    if (!on) return;
+    if (document.hidden){ if (ctx) ctx.suspend(); if (fallback) fallback.pause(); }
+    else { if (ctx) ctx.resume(); if (fallback) fallback.play().catch(() => {}); }
+  });
+  ui();
+})();
 
 // ---------- abertura -> convite ----------
 const intro = document.getElementById("intro"), pages = document.getElementById("pages");
